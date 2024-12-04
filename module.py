@@ -26,15 +26,15 @@ class RMSNorm(torch.nn.Module):
 
 class LinearRNNBlock(nn.Module):
 
-      def __init__(self, channel):
+      def __init__(self, channel, expansion=1):
           super(LinearRNNBlock, self).__init__()
-          self.norm1 = RMSNorm(channel, expansion=1)
+          self.norm1 = RMSNorm(channel)
           self.mlp1 = nn.Linear(channel, channel)
           
           self.norm2 = RMSNorm(channel)
           self.mlp2 = nn.Sequential(nn.Linear(channel, expansion*channel),
                                     nn.ReLU(True),
-                                    nn.Linear(expansion*hannel, channel))
+                                    nn.Linear(expansion*channel, channel))
 
           #self.act = HardSigmoid(True)
           self.act = nn.Sigmoid()
