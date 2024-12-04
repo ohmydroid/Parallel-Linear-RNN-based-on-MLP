@@ -46,7 +46,7 @@ class LinearRNNBlock(nn.Module):
           scaler = torch.arange(1,T+1).cumsum(dim=-1).view(1,T,1)
           state  /= scaler
 
-          out = self.h_sigmoid(self.mlp1(state))*x
+          out = self.act(self.mlp1(state))*x
 
           out = self.mlp2(self.norm2(out)) + out
           return out
