@@ -1,15 +1,15 @@
 import torch
 import torch.nn as nn
 
-'''
+
 class HardSigmoid(nn.Module):
       def __init__(self, inplace=True):
           super(HardSigmoid, self).__init__()
           self.relu = nn.ReLU6(inplace=inplace)
 
       def forward(self, x):
-          return self.relu(x + 3) / 6
-'''
+          return self.relu(x + 3) / 6 - 0.5
+
 
 class RMSNorm(torch.nn.Module):
     def __init__(self, dim: int, eps: float = 1e-6):
@@ -36,17 +36,13 @@ class LinearRNNBlock(nn.Module):
                                     nn.ReLU(True),
                                     nn.Linear(expansion*channel, channel))
 
-          #self.act = HardSigmoid(True)
-          self.act = nn.Sigmoid()
+          self.act = HardSigmoid(True)
+          
           
       def forward(self, x):
   
           T = x.size(-2)
-          state  = self.norm1(x).cumsum(dim=1)
-          scaler = torch.arange(1,T+1).cumsum(dim=-1).view(1,T,1)
-          state  /= scaler
-
+          state  = self.act(self.norm1(x)).cumsum(dim=1)
           out = self.act(self.mlp1(state))*x
-
           out = self.mlp2(self.norm2(out)) + out
           return out
